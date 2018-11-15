@@ -300,10 +300,11 @@ MonoBehaviour:
   target: {fileID: 0}
   calculateOffsetAtStart: 1
   offset: {x: 0, y: 0, z: 0}
-  lookAheadDistance: 10
+  lookAheadDistance: {x: 0, y: 0}
   smoothingTime: 0.05
-  returnTime: 0.01
   maxTransitionSpeed: 100
+  useDifferentReturnSpeed: 0
+  returnTime: 0.01
 --- !u!1 &1599665377
 GameObject:
   m_ObjectHideFlags: 0
