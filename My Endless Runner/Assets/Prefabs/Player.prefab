@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 50978716606183400}
   - component: {fileID: 70287005990579532}
   m_Layer: 0
-  m_Name: Player 1
+  m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

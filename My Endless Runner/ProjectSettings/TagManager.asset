@@ -7,6 +7,8 @@ TagManager:
   - Platform
   - Obstacle
   - Pickup
+  - Apocalypse
+  - NPC
   layers:
   - Default
   - TransparentFX
@@ -43,4 +45,22 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 2560752697
+    locked: 0
+  - name: Background Parallax
+    uniqueID: 1371786537
+    locked: 0
+  - name: Ground
+    uniqueID: 3929543113
+    locked: 0
+  - name: Player
+    uniqueID: 161396691
+    locked: 0
+  - name: Foreground
+    uniqueID: 3086219109
+    locked: 0
+  - name: Foreground Parallax
+    uniqueID: 104981431
     locked: 0

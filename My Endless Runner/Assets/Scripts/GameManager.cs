@@ -1,78 +1,103 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
-    #region Public Variables
-    // Reference to the player game object
-    public GameObject player;
-    // Reference to the camera that is supposed to follow the player
-    public GameObject mainCamera;
 
-    // What is the base game speed
-    public float startingSpeed = 100f;
-    // By how much should the speed increase
-    public float acceleration = 1.01f;
-    // How often should the speed increase
-    public float accelerationInterval = 2f;
-    // How fast is the game currently running
-    public float currentSpeed = 0;
-    #endregion
+	const string PLAYER_TAG = "Player";
+	const string APOCALYPSE_TAG = "Apocalypse";
 
-    #region Private Variables
-    // How long until the speed increases
-    private float nextIncrease = 0;
-    #endregion
+	[HideInInspector]
+	public static GameManager Instance;
 
-    // Use this for initialization
-    void Start () {
-        if (mainCamera == null)
-        {
-            mainCamera = Camera.main.gameObject;
-        }
-        // Reset the increase timer
-        nextIncrease = accelerationInterval;
+	#region Inspector visible variables
+	[Header("Scene References")]
+	public GameObject player;
+	public GameObject apocalypse;
+	public Camera mainCamera;
 
-        // Set the base running speed
-        currentSpeed = startingSpeed;
-	}
-	
-	// Update is called once per frame
-	void Update () {
+	[Header("Apocalypse Cloud Behaviour")]
+	public float cloudStartVelocity = 1;
+	public float cloudAcceleration = 0;
+	public float cloudTopVelocity = 2;
+	#endregion
 
-        // Check if player is still in bounds
-        Vector2 playerPos = new Vector2(player.transform.position.x, player.transform.position.y);
-        Vector2 playerHalfScale = new Vector2(player.transform.localScale.x, player.transform.localScale.y);
-        Bounds camBounds = OrthographicBounds(mainCamera.GetComponent<Camera>());
-        //Debug.Log(camBounds);
+	Rigidbody2D apoRB;
 
-        if (playerPos.x + playerHalfScale.x < camBounds.min.x || playerPos.x - playerHalfScale.x > camBounds.max.x
-            || playerPos.y + playerHalfScale.y < camBounds.min.y || playerPos.y - playerHalfScale.y > camBounds.max.y)
-        {
-            Debug.Log("Player is outside of bounds!");
-            // TODO game over
-        }
+	// Use this for initialization
+	void Start ()
+	{
+		// Check to see if an instance of GameManager 
+		//  already exists
+		CheckInstance();
 
-        // calculate camera offset
-        float horCamOffset = Mathf.Lerp(0, currentSpeed * Time.deltaTime, Time.time);
-        mainCamera.transform.position += new Vector3 (horCamOffset, 0, 0);
+		// Get and set all required game objects and 
+		//  components from the active scene
+		FindReferencesInScene();
+
+		SetupApocalypse();
 	}
 
-    private void FixedUpdate()
-    {
-        // Everytime the the interval has elapsed, increase the current game speed
-        //  and reset the timer
-        nextIncrease -= Time.fixedDeltaTime;
-        if (nextIncrease <= 0)
-        {
-            currentSpeed *= acceleration;           // accelerate
-            nextIncrease += accelerationInterval;   // reset timer
-        }
-        //Debug.Log("next increase in '" + nextIncrease + "'; current speed is " + currentSpeed);
-    }
+	private void SetupApocalypse()
+	{
+		apoRB = apocalypse.GetComponent<Rigidbody2D>();
+		apoRB.isKinematic = true;
+		apoRB.velocity = new Vector2(cloudStartVelocity, 0);
+	}
 
-    // Calculating camera bounds
-    private Bounds OrthographicBounds(Camera camera)
+	private void FindReferencesInScene()
+	{
+		if (player == null)
+		{
+			player = GameObject.FindGameObjectWithTag(PLAYER_TAG);
+			if (player == null)
+			{
+				throw new Exception("No player found in active scene!");
+			}
+		}
+		if (apocalypse == null)
+		{
+			apocalypse = GameObject.FindGameObjectWithTag(APOCALYPSE_TAG);
+			if (apocalypse == null)
+			{
+				throw new Exception("No apocalypse found in active scene!");
+			}
+		}
+		if (mainCamera == null)
+		{
+			mainCamera = Camera.main;
+			if (mainCamera == null)
+			{
+				throw new Exception("No main camera found in active scene!");
+			}
+		}
+	}
+
+	private void CheckInstance()
+	{
+		if (Instance != null)
+		{
+			Destroy(gameObject);
+		}
+		Instance = this;
+		DontDestroyOnLoad(gameObject);
+	}
+
+	void Update()
+	{
+
+	}
+
+	void FixedUpdate()
+	{
+		apoRB.velocity += Vector2.right * (cloudAcceleration / Time.deltaTime);
+		apoRB.velocity = Vector2.ClampMagnitude(apoRB.velocity, cloudTopVelocity);
+		Debug.Log(apoRB.velocity);
+	}
+
+	// Calculating camera bounds
+	private Bounds OrthographicBounds(Camera camera)
     {
         float screenAspect = (float)Screen.width / (float)Screen.height;
         float cameraHeight = camera.orthographicSize * 2;

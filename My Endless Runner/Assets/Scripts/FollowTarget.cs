@@ -12,6 +12,7 @@ public class FollowTarget : MonoBehaviour {
 
 	[Header("Position Offsetting")]
 	public bool calculateOffsetAtStart = true;
+	public bool ignoreX, ignoreY, ignoreZ;
 	[Tooltip("The positional offset towards the followed object. You may leave this empty if 'calcualteOffsetAtStart' is ticked.")]
 	public Vector3 offset;
 	[Tooltip("The distance that the gameobject should look ahead of the target in a direction when following.")]
@@ -51,6 +52,19 @@ public class FollowTarget : MonoBehaviour {
 		{
 			offset = transform.position - target.position;
 			lastPos = target.position;
+
+			if (ignoreX)
+			{
+				offset.x = 0;
+			}
+			if (ignoreY)
+			{
+				offset.y = 0;
+			}
+			if (ignoreZ)
+			{
+				offset.z = 0;
+			}
 		}
 
 	}
